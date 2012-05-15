@@ -21,14 +21,18 @@ void usage(string progName, OutputStream stream)
     stream.writefln("    %-15s%s", "-h, --help", "This help message");
 }
 
-void commandRun()
+void commandRun(string progName)
 {
     auto rootDir = getRootDir();
     auto confPath = rootDir.getConfigPath();
+    if (!confPath.exists()) {
+        throw new Exception(format("Configure file `%s` doesn't exist. To generate it, execute `%s --init`", confPath, progName));
+    }
 
-    import std.stdio;
-    writefln("%s", rootDir);
-    auto config = new Configure();
+    auto conf = new Configure();
+    auto inFile = new File(confPath, FileMode.In);
+    scope(exit) inFile.close();
+    conf.append(inFile.parseStream());
 }
 
 void inputConfItem(Configure conf, string key)
@@ -119,7 +123,7 @@ int main(string[] args)
     try {
         final switch (mode) {
         case Mode.Run:
-            commandRun();
+            commandRun(progName);
             break;
         case Mode.Init:
             commandInit();
