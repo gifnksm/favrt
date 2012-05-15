@@ -46,6 +46,7 @@ void commandInit()
         dout.writefln("Configure file `%s` already exists. Overwrite it? [y/n]", confPath);
         auto c = din.readLine();
         if (c[0] != 'y' && c[0] != 'Y') {
+            dout.writefln("Initialization canceled.");
             return;
         }
     }
@@ -59,6 +60,8 @@ void commandInit()
     auto outFile = new File(confPath, FileMode.OutNew);
     outFile.writefln("# %s configure file", AppName);
     outFile.writeStream(conf);
+
+    dout.writefln("Initialization successfully completed!");
 }
 
 void commandHelp(string progName)
