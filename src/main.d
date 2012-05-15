@@ -49,12 +49,12 @@ void inputConfItem(Configure conf, string key)
 }
 
 
-void commandInit()
+void commandInit(string progName)
 {
     auto rootDir = getRootDir();
     if (!rootDir.exists()) {
         if (optVerbose) {
-            dout.writefln("Directory %s doesn't exists. create", rootDir);
+            dout.writefln("Directory `%s` doesn't exists. create", rootDir);
         }
         rootDir.mkdir();
     }
@@ -126,7 +126,7 @@ int main(string[] args)
             commandRun(progName);
             break;
         case Mode.Init:
-            commandInit();
+            commandInit(progName);
             break;
         case Mode.Help:
             commandHelp(progName);
