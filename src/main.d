@@ -3,7 +3,7 @@ module main;
 import std.cstream : derr, dout, din;
 import std.file    : exists, mkdir;
 import std.getopt  : getopt;
-import std.stream  : OutputStream;
+import std.stream  : OutputStream, File, FileMode;
 import std.string  : chomp, format;
 
 import config : Configure, writeStream;
@@ -56,8 +56,9 @@ void commandInit()
     dout.writefln("Input consumer_secret:");
     conf[ConfName.ConsumerSecret] = din.readLine().chomp().idup;
 
-    dout.writefln("# %s configure file", AppName);
-    dout.writeStream(conf);
+    auto outFile = new File(confPath, FileMode.OutNew);
+    outFile.writefln("# %s configure file", AppName);
+    outFile.writeStream(conf);
 }
 
 void commandHelp(string progName)
