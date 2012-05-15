@@ -58,6 +58,7 @@ void commandInit()
     conf[ConfName.ConsumerSecret] = din.readLine().chomp().idup;
 
     auto outFile = new File(confPath, FileMode.OutNew);
+    scope (exit) outFile.close();
     outFile.writefln("# %s configure file", AppName);
     outFile.writeStream(conf);
 
