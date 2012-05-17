@@ -6,9 +6,10 @@ import std.getopt  : getopt;
 import std.stream  : OutputStream, File, FileMode;
 import std.string  : chomp, format, empty;
 
-import config : Configure, writeStream, parseStream;
-import param  : AppName, ConfName;
-import path   : getRootDir, getConfigPath;
+import config  : Configure, writeStream, parseStream;
+import param   : AppName, ConfName;
+import path    : getRootDir, getConfigPath, getCachePath;
+import twitter : twitter_get_access_token;
 
 bool optVerbose = false;
 
@@ -26,13 +27,23 @@ void commandRun(string progName)
     auto rootDir = getRootDir();
     auto confPath = rootDir.getConfigPath();
     if (!confPath.exists()) {
-        throw new Exception(format("Configure file `%s` doesn't exist. To generate it, execute `%s --init`", confPath, progName));
+        throw new Exception(format("Configure file `%s` doesn't exist. To generate it, execute `%s --init`",
+                                   confPath, progName));
     }
 
     auto conf = new Configure();
-    auto inFile = new File(confPath, FileMode.In);
-    scope(exit) inFile.close();
-    conf.append(inFile.parseStream());
+    {
+        auto inFile = new File(confPath, FileMode.In);
+        scope(exit) inFile.close();
+        conf.append(inFile.parseStream());
+    }
+
+    if (ConfName.ConsumerKey !in conf || ConfName.ConsumerSecret !in conf) {
+        throw new Exception(format("Configure file `%s` is incomplete. To complete it,  execute `%s --init`",
+                                   confPath, progName));
+    }
+
+    auto access_token = twitter_get_access_token(conf[ConfName.ConsumerKey], conf[ConfName.ConsumerSecret]);
 }
 
 void inputConfItem(Configure conf, string key)

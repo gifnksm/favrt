@@ -9,7 +9,7 @@ OBJDIR=$(OBJ_ROOT)/$(BUILD)
 BINDIR=$(BIN_ROOT)/$(BUILD)
 
 TARGET_NAME=favrt
-SRC=$(addprefix $(SRCDIR)/,main.d config.d path.d)
+SRC=$(addprefix $(SRCDIR)/,main.d config.d path.d twitter.d)
 OBJ=${patsubst $(SRCDIR)/%.d,$(OBJDIR)/%.o,$(SRC)}
 TARGET=$(BINDIR)/$(TARGET_NAME)
 
@@ -19,7 +19,7 @@ DFLAGS.release=-release -inline -O
 DFLAGS.unittest=$(DFLAGS.debug) -unittest -cov
 DFLAGS+=$(DFLAGS.$(BUILD))
 
-LDFLAGS=-L-lxml2
+LDFLAGS=-L-lxml2 -L-lcrypto -L-lcurl
 
 .PHONY: debug
 debug:
